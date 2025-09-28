@@ -1,35 +1,27 @@
-|
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Diaro Di Un Folle</title>
-    <title>Document</title>
+    <title>Diario Di Un Folle</title>
 </head>
-
 <body>
     <div id="header">
         <h1 class="title">Diario Di un folle</h1>
         <h2 class="title">Malato mentale, ex tossicodipendente e informatico</h2>
     </div>
-    <h3 id="latest-post">ultimi post</h3>
-    <div>
-        <div id="latest-post-content">
-            <h3 class="name-post">Post 1</h3>
-            <div class="post-meta">
-                <h4>Data pubblicazione</h4>
-                <span id="release-date">DATA</span>
-            
-            </div>
-            <p>inizio scrivendo questo diario, un po per me stesso. un po' per gli altri, forse la mia voglia di farmi
-                vedere e farmi sentire mi spinge nel creare questo blog.</p>
-        </div>
+
+    <div id="admin-panel">
+        <button  onclick="askPassword()">🔐 Admin Mode</button>
     </div>
+    <button id="add-post-btn" onclick="addPost()">aggiungi post</button>
+    <h3 id="latest-post">ultimi post</h3>
+    
+    <div id="posts-container">
+        <div class="loading">Caricamento post...</div>
+    </div>
+
     <script src="script.js"></script>
-
 </body>
-
 </html>
