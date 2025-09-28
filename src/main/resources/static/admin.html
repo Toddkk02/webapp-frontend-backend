@@ -3,19 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Modification</title>
+    <title>Admin - Aggiungi Post</title>
+    <style>
+        body {
+            background: #181818;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #admin-panel {
+            background: #232323;
+            border-radius: 10px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.7);
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 32px;
+        }
+        
+        h1 {
+            color: #ff9800;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        label {
+            color: #bdbdbd;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        input[type="text"], textarea {
+            background: #2c2c2c;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 16px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus, textarea:focus {
+            border-color: #ff9800;
+            outline: none;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        button {
+            background: #ff9800;
+            color: #181818;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 24px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background: #ffa726;
+        }
+        
+        .btn-secondary {
+            background: #666;
+            color: #e0e0e0;
+        }
+        
+        .btn-secondary:hover {
+            background: #777;
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .success {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .error {
+            background: #f44336;
+            color: white;
+        }
+        
+        #loading {
+            display: none;
+            text-align: center;
+            color: #ff9800;
+        }
+    </style>
 </head>
 <body>
-<div id="admin-panel">
-    <h1>Admin Panel</h1>
-    <form id="post-form" action="index.html" method="POST">
-        <label for="post-title">Post Title:</label><br>
-        <input type="text" id="post-title" name="post-title" required><br><br>
-        <label for="post-content">Post Content:</label><br>
-        <textarea id="post-content" name="post-content" rows="10" cols="50" required></textarea><br><br>
-        <button type="submit">Add Post</button>
-    </form>
+    <div id="admin-panel">
+        <h1>Aggiungi Nuovo Post</h1>
+        
+        <div id="message"></div>
+        <div id="loading">Pubblicazione in corso...</div>
+        
+        <!-- FORM SENZA ACTION E METHOD -->
+        <form id="post-form">
+            <label for="post-title">Titolo del Post:</label>
+            <input type="text" id="post-title" name="title" required placeholder="Inserisci il titolo...">
+            
+            <label for="post-summary">Riassunto (opzionale):</label>
+            <input type="text" id="post-summary" name="summary" placeholder="Breve descrizione del post...">
+            
+            <label for="post-content">Contenuto del Post:</label>
+            <textarea id="post-content" name="content" rows="12" required placeholder="Scrivi qui il contenuto del post..."></textarea>
+            
+            <div class="button-group">
+                <button type="submit" id="submit-btn">Pubblica Post</button>
+                <button type="button" class="btn-secondary" onclick="goBack()">Torna al Blog</button>
+            </div>
+        </form>
+    </div>
 
-</div>
+    <script>
+        // SOLUZIONE DEFINITIVA - preventDefault() all'inizio
+        document.getElementById('post-form').addEventListener('submit', function(e) {
+            // PRIMA COSA: blocca il submit del form
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Form intercettato, nessun redirect');
+            
+            // Elementi UI
+            const loading = document.getElementById('loading');
+            const messageDiv = document.getElementById('message');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            // Mostra loading
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Pubblicando...';
+            messageDiv.innerHTML = '';
+            
+            // Raccoglie i dati del form
+            const formData = {
+                title: document.getElementById('post-title').value.trim(),
+                summary: document.getElementById('post-summary').value.trim(),
+                content: document.getElementById('post-content').value.trim(),
+                published: true,
+                createdAt: new Date().toISOString(),
+                viewCount: 0
+            };
+            
+            console.log('Dati da inviare:', formData);
+            
+            // Validazione client-side
+            if (!formData.title || !formData.content) {
+                messageDiv.innerHTML = '<div class="message error">Titolo e contenuto sono obbligatori!</div>';
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Pubblica Post';
+                return;
+            }
+            
+            // Invio API
+            fetch('/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                console.log('Risposta ricevuta:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(result => {
+                console.log('Risultato:', result);
+                messageDiv.innerHTML = '<div class="message success">Post pubblicato con successo!</div>';
+                document.getElementById('post-form').reset();
+                
+                // Reindirizza dopo 2 secondi
+                setTimeout(() => {
+                    window.location.href = '/index.html';
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Errore:', error);
+                messageDiv.innerHTML = `<div class="message error">Errore: ${error.message}</div>`;
+            })
+            .finally(() => {
+                // Ripristina UI
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Pubblica Post';
+            });
+        });
+        
+        function goBack() {
+            window.location.href = '/index.html';
+        }
+        
+        // Debug: verifica che il form sia collegato
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Pagina caricata, form collegato');
+            
+            const form = document.getElementById('post-form');
+            if (form) {
+                console.log('Form trovato:', form);
+            } else {
+                console.error('Form NON trovato!');
+            }
+        });
+    </script>
 </body>
 </html>

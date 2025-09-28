@@ -170,19 +170,7 @@ body {
     color: #4b5563;
 }
 #add-post-btn {
-    display: none; /* Nascosto di default */
-    background-color: #4aa86e;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin: 20px auto;
+    margin-top: 15px;
     display: block;
-    width: 200px;
 }
 
-#add-post-btn:hover {
-    background-color: #3d8c5a;
-}
