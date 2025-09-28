@@ -60,7 +60,7 @@ async function askPassword() {
 // Funzione per aggiornare l'interfaccia admin
 function updateAdminUI() {
     const addPostBtn = document.getElementById('add-post-btn');
-    
+
     if (adminMode) {
         if (addPostBtn) {
             addPostBtn.style.display = "block";
@@ -92,7 +92,7 @@ function displayPosts(posts) {
 
         const postDiv = document.createElement('div');
         postDiv.className = 'latest-post-content';
-
+        postDiv.setAttribute('data-post-id', post.id);
         // Contenuto principale del post
         postDiv.innerHTML = `
             <h3 class="name-post">${escapeHtml(post.title)}</h3>
@@ -153,19 +153,87 @@ function displayFallbackPost() {
     displayPosts(posts);
 }
 
-// Funzione per eliminare un post
-function deletePost(postId) {
-    if (confirm('Sei sicuro di voler eliminare questo post?')) {
-        console.log('Eliminazione post:', postId);
-        // In un caso reale qui faresti fetch DELETE verso il backend
-        loadPosts(); // ricarica i post dopo l'eliminazione
+// Funzione per eliminare un post - IMPLEMENTAZIONE COMPLETA
+async function deletePost(postId) {
+    if (!postId) {
+        alert('ID del post non valido');
+        return;
+    }
+
+    if (confirm('Sei sicuro di voler eliminare questo post? L\'azione non può essere annullata.')) {
+        try {
+            console.log('🗑️ Eliminando post ID:', postId);
+
+            // Mostra loading
+            const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+            if (postElement) {
+                postElement.style.opacity = '0.5';
+                postElement.style.pointerEvents = 'none';
+            }
+
+            const response = await fetch(`/api/posts/${postId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            console.log('📡 Risposta eliminazione:', response.status);
+
+            if (response.ok) {
+                // Prova a leggere la risposta come JSON
+                let result = {};
+                try {
+                    result = await response.json();
+                } catch (e) {
+                    // Se non è JSON, va bene lo stesso
+                    result = { success: true };
+                }
+
+                console.log('✅ Post eliminato con successo');
+                alert('Post eliminato con successo!');
+
+                // Ricarica i post
+                loadPosts();
+
+            } else {
+                let errorMsg = 'Errore sconosciuto';
+                try {
+                    const errorData = await response.json();
+                    errorMsg = errorData.message || `HTTP ${response.status}`;
+                } catch (e) {
+                    errorMsg = `HTTP ${response.status}: ${response.statusText}`;
+                }
+
+                console.error('❌ Errore eliminazione:', errorMsg);
+                alert('Errore nell\'eliminazione: ' + errorMsg);
+
+                // Ripristina l'elemento se errore
+                if (postElement) {
+                    postElement.style.opacity = '1';
+                    postElement.style.pointerEvents = 'auto';
+                }
+            }
+
+        } catch (error) {
+            console.error('💥 Errore di connessione:', error);
+            alert('Errore di connessione: ' + error.message);
+
+            // Ripristina l'elemento se errore
+            const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+            if (postElement) {
+                postElement.style.opacity = '1';
+                postElement.style.pointerEvents = 'auto';
+            }
+        }
     }
 }
 
-// Funzione per aggiungere un post (placeholder)
+// Funzione per aggiungere un post - IMPLEMENTAZIONE COMPLETA
 function addPost() {
-    alert("Funzione 'Aggiungi Post' non ancora implementata!");
-    // Qui implementerai la logica per aggiungere un nuovo post
+    console.log('Apertura form per nuovo post');
+    window.location.href = 'admin.html';
 }
 
 // Format della data in formato italiano
@@ -187,18 +255,19 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Apri post (puoi aggiungere navigazione reale)
+// Apri post - Naviga alla pagina post.html con ID del post
 function openPost(postId) {
-    console.log('Apri post:', postId);
+    console.log('Apertura post ID:', postId);
+    window.location.href = `post.html?id=${postId}`;
 }
 
 // Avvia quando la pagina è pronta
 document.addEventListener('DOMContentLoaded', () => {
     console.log("🚀 Pagina caricata, adminMode iniziale:", adminMode);
-    
+
     // Nascondi il pulsante all'inizio
     updateAdminUI();
-    
+
     // Carica i post
     loadPosts();
 });
