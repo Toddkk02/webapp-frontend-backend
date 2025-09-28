@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post - Diario Di Un Folle</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            color: #e0e0e0;
+        }
+
+        #header {
+            margin: auto;
+            width: 70%;
+            border: 3px solid rgb(82, 80, 76);
+            padding: 10px;
+            background-color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            color: #8b2635;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .back-button {
+            background-color: #4aa86e;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 20px auto;
+            display: block;
+            text-decoration: none;
+            text-align: center;
+            width: 200px;
+        }
+
+        .back-button:hover {
+            background-color: #3d8c5a;
+        }
+
+        #post-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        #post-title {
+            color: #ce6b0e;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        #post-meta {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 15px;
+        }
+
+        #post-content {
+            color: #e0e0e0;
+            line-height: 1.8;
+            font-size: 18px;
+            text-align: justify;
+            margin-bottom: 30px;
+            white-space: pre-wrap;
+        }
+
+        #post-stats {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        #comments-section {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+        }
+
+        .comments-title {
+            color: #ce6b0e;
+            border-bottom: 2px solid #ce6b0e;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .comment-form {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+
+        .comment-form input,
+        .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background-color: #444;
+            border: 1px solid #666;
+            border-radius: 5px;
+            color: #e0e0e0;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .comment-form input:focus,
+        .comment-form textarea:focus {
+            outline: none;
+            border-color: #ce6b0e;
+        }
+
+        .comment-form button {
+            background-color: #ce6b0e;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .comment-form button:hover {
+            background-color: #b8590c;
+        }
+
+        .comment-form button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+
+        .comment {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 3px solid #ce6b0e;
+        }
+
+        .comment-author {
+            color: #ce6b0e;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .comment-date {
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .comment-content {
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .error {
+            text-align: center;
+            color: #ff6b6b;
+            background-color: #2a1a1a;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .success {
+            text-align: center;
+            color: #4aa86e;
+            background-color: #1a2a1a;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            #header {
+                width: 90%;
+            }
+            
+            #post-container,
+            #comments-section {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            #post-title {
+                font-size: 1.5em;
+            }
+            
+            #post-content {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1 class="title">Diario Di un folle</h1>
+        <h2 class="title">Malato mentale, ex tossicodipendente e informatico</h2>
+    </div>
+
+    <a href="index.html" class="back-button">← Torna al Blog</a>
+
+    <div id="post-container">
+        <div class="loading">Caricamento post...</div>
+    </div>
+
+    <div id="comments-section">
+        <h3 class="comments-title">Commenti</h3>
+        
+        <div class="comment-form">
+            <input type="text" id="comment-author" placeholder="Il tuo nome" required>
+            <textarea id="comment-content" rows="4" placeholder="Scrivi un commento..." required></textarea>
+            <button onclick="addComment()" id="comment-submit">Pubblica Commento</button>
+        </div>
+
+        <div id="comments-container">
+            <div class="loading">Caricamento commenti...</div>
+        </div>
+    </div>
+
+    <script>
+        // Ottieni l'ID del post dall'URL
+        function getPostId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Carica il post completo
+        async function loadPost() {
+            const postId = getPostId();
+            if (!postId) {
+                showError('ID del post non specificato');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/posts/${postId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const post = await response.json();
+                displayPost(post);
+                
+            } catch (error) {
+                console.error('Errore nel caricamento del post:', error);
+                showError('Errore nel caricamento del post: ' + error.message);
+            }
+        }
+
+        // Visualizza il post
+        function displayPost(post) {
+            const container = document.getElementById('post-container');
+            
+            container.innerHTML = `
+                <h1 id="post-title">${escapeHtml(post.title)}</h1>
+                <div id="post-meta">
+                    <p><strong>Pubblicato il:</strong> ${formatDate(post.createdAt)}</p>
+                    ${post.updatedAt ? `<p><strong>Aggiornato il:</strong> ${formatDate(post.updatedAt)}</p>` : ''}
+                </div>
+                <div id="post-content">${escapeHtml(post.content)}</div>
+                <div id="post-stats">
+                    Visualizzazioni: ${post.viewCount || 0}
+                </div>
+            `;
+
+            // Aggiorna il titolo della pagina
+            document.title = `${post.title} - Diario Di Un Folle`;
+        }
+
+        // Carica i commenti
+        async function loadComments() {
+            const postId = getPostId();
+            if (!postId) return;
+
+            try {
+                const response = await fetch(`/api/posts/${postId}/comments`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const comments = await response.json();
+                displayComments(comments);
+                
+            } catch (error) {
+                console.error('Errore nel caricamento dei commenti:', error);
+                document.getElementById('comments-container').innerHTML = 
+                    '<div class="error">Errore nel caricamento dei commenti</div>';
+            }
+        }
+
+        // Visualizza i commenti
+        function displayComments(comments) {
+            const container = document.getElementById('comments-container');
+            
+            if (!comments || comments.length === 0) {
+                container.innerHTML = '<div class="loading">Nessun commento ancora. Sii il primo a commentare!</div>';
+                return;
+            }
+
+            container.innerHTML = comments.map(comment => `
+                <div class="comment">
+                    <div class="comment-author">${escapeHtml(comment.author)}</div>
+                    <div class="comment-date">${formatDate(comment.createdAt)}</div>
+                    <div class="comment-content">${escapeHtml(comment.content)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Aggiungi un commento
+        async function addComment() {
+            const postId = getPostId();
+            const author = document.getElementById('comment-author').value.trim();
+            const content = document.getElementById('comment-content').value.trim();
+            const submitBtn = document.getElementById('comment-submit');
+
+            if (!author || !content) {
+                alert('Nome e commento sono obbligatori');
+                return;
+            }
+
+            // Disabilita il pulsante durante l'invio
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Pubblicando...';
+
+            try {
+                const response = await fetch(`/api/posts/${postId}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        author: author,
+                        content: content
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                // Pulisci il form
+                document.getElementById('comment-author').value = '';
+                document.getElementById('comment-content').value = '';
+
+                // Mostra messaggio di successo
+                showSuccess('Commento pubblicato con successo!');
+
+                // Ricarica i commenti
+                loadComments();
+
+            } catch (error) {
+                console.error('Errore nell\'aggiunta del commento:', error);
+                showError('Errore nella pubblicazione del commento');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Pubblica Commento';
+            }
+        }
+
+        // Utility functions
+        function showError(message) {
+            document.getElementById('post-container').innerHTML = 
+                `<div class="error">${message}</div>`;
+        }
+
+        function showSuccess(message) {
+            const container = document.getElementById('comments-section');
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            container.insertBefore(successDiv, container.firstChild);
+            
+            // Rimuovi il messaggio dopo 3 secondi
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.parentNode.removeChild(successDiv);
+                }
+            }, 3000);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Data non disponibile';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('it-IT', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (error) {
+                return 'Data non valida';
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPost();
+            loadComments();
+        });
+    </script>
+</body>
+</html>
